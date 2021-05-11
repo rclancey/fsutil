@@ -76,6 +76,7 @@ func (lf *LockedFile) Unlock() error {
 func (lf *LockedFile) Close() error {
 	err := lf.Sync()
 	if err != nil {
+		log.Println("error syncing file before closing:", err)
 		return err
 	}
 	err = lf.Unlock()
