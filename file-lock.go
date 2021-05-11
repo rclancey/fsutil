@@ -2,6 +2,7 @@ package fsutil
 
 import (
 	"io"
+	"log"
 	"os"
 	"syscall"
 
@@ -48,10 +49,12 @@ func (lf *LockedFile) Lock() error {
 	} else {
 		lock = syscall.LOCK_EX
 	}
+	log.Println("lock", lf.File.Name())
 	err := syscall.Flock(int(lf.Fd()), lock)
 	if err != nil {
 		return err
 	}
+	log.Println("got lock for", lf.File.Name())
 	lf.lock = &lock
 	return nil
 }
@@ -60,10 +63,12 @@ func (lf *LockedFile) Unlock() error {
 	if lf.lock == nil {
 		return nil
 	}
+	log.Println("unlocking", lf.File.Name())
 	err := syscall.Flock(int(lf.Fd()), syscall.LOCK_UN)
 	if err != nil {
 		return err
 	}
+	log.Println("unlocked", lf.File.Name())
 	lf.lock = nil
 	return nil
 }
